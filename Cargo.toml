@@ -1,0 +1,8 @@
+[package]
+
+name = "word_generator"
+version = "0.0.1"
+authors = ["Sean Hagar <rcix2010@gmail.com>"]
+
+[dependencies.rand]
+git = "https://github.com/rust-lang/rand.git"
