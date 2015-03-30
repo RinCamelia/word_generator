@@ -10,10 +10,11 @@ use std::fs::File;
 use rand::Rng;
 use rand::distributions::{Weighted, WeightedChoice, IndependentSample};
 
+static CONFIG_FILE_NAME: &'static str = "json_sample_config.json";
+
 fn main() {
-
-
     let mut file = File::create("words.txt").unwrap();
+    let mut config = load_config(CONFIG_FILE_NAME);
 
     for _ in 0..10 {
         let mut word : String = make_word();
@@ -23,6 +24,22 @@ fn main() {
                 Ok(_) => (),
         };
 
+    }
+}
+
+fn load_config(config_name :&str) -> String {
+    let mut config_file = File::open(config_name).unwrap();
+
+    let mut file_buffer : Vec<u8> = Vec::new(;)
+
+    match config_file.read_to_end(&mut file_buffer) {
+        Ok(_) => (),
+        Err(error) => panic!("Error reading config: {}", Error::description(&error)),
+    };
+
+    match String::from_utf8(file_buffer) {
+        Ok(result) => result,
+        Err(error) => panic!("Error converting config u8 buffer to a String: {}", Error::description(&error)),
     }
 }
 
