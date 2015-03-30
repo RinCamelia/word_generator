@@ -1,59 +1,43 @@
 {
-    "config":{
-        "output_file":"words.txt",
-        "syllable_decay_rate":0.2,
-        "max_syllables":10,
-        "word_count":20,
-        "rewrites_before_rejects":true,
-        "output":{
-            "show_syllable_generation":false,
-            "show_word_rewrites":"none|single|all",
-            "only_mark_rejects":false
-        },
-        "debug_use_static_wordlist":false
+    "settings": {
+        "output_file": "test",
+        "syllable_decay_rate": 0.2,
+        "max_syllables": 10,
+        "word_count": 10,
+        "rewrites_before_rejects": false,
+        "debug_use_static_wordlist": false,
+        "output_settings": {
+            "show_syllable_generation": false,
+            "show_word_rewrites": false,
+            "show_full_word_transforms": false,
+            "only_mark_rejects": false
+        }
     },
-    "phonemes":{
-        "V":[
-            {"string":"i","weight":1},
-            {"string":"e","weight":2},
-            {"string":"é","weight":1},
-            {"string":"ea","weight":4},
-            {"string":"a","weight":1}
-        ],
-        "C":[
-            {"string":"p","weight":10},
-            {"string":"m","weight":22},
-            {"string":"n","weight":35},
-            {"string":"s","weight":19}
-        ],
-        "L":[
-            {"string":"r","weight":30},
-            {"string":"l","weight":20},
-            {"string":"ui","weight":5}
-        ]
-    },
-    "syllables":[
-        {"generate":"CV","weight":50}
-        {"generate":"V","weight":20,"last_syllable":"require"},
-        {"generate":"VCV","weight":20,"first_syllable":"disable"}
-        {"generate":"CVL","weight":5,"first_syllable":"require","last_syllable":"require"},
+    "graphemes": [
+        {
+            "name": "C",
+            "graphemes": [
+                { "string": "e", "weight": 10 }
+            ]
+        }
     ],
-    "rewrites":{
-        "syllable_rewrites":[
-            {"pattern":"VVCVV$","replace":"CLV"}
+    "syllables": [
+        { "string": "CV", "weight": 20, "only_first_syllable": false, "only_last_syllable": false }
+    ],
+    "rewrites": {
+        "syllable_rewrites": [
+            { "pattern": "abc", "replace": "def"}
         ],
-        "phoneme_rewrites":[
-            {"pattern":"p(é).a","replace":"ea"}
+        "grapheme_rewrites": [
+            { "pattern": "abc", "replace": "def" }
         ]
     },
-    "rejects":{
-        "syllable_rejects":[
-            "CVLV",
-            ".*VCVCVL"
+    "rejects": {
+        "syllable_rejects": [
+            "abc"
         ],
-        "phoneme_rejects":[
-            "méa",
-            "[r|l|ui]p"
+        "grapheme_rejects": [
+            "abc"
         ]
     }
 }

@@ -12,7 +12,7 @@ extern crate rustc_serialize;
 
 //use
 
-use rustc_serialize::*;
+use config::*;
 use std::error::Error;
 use std::io::prelude::*;
 use std::fs::File;
@@ -27,13 +27,14 @@ static CONFIG_FILE_NAME: &'static str = "json_sample_config.json";
 
 fn main() {
     let mut file = File::create("words.txt").unwrap();
-    let mut config = config::load_config(CONFIG_FILE_NAME);
+    let mut config: WordGeneratorConfig = load_config(&CONFIG_FILE_NAME);
+
 
     for _ in 0..10 {
         let mut word : String = make_word();
         word.push('\n');
         match file.write(word.as_bytes()) {
-                Err(error) => panic!("error {} writing to file", Error::description(&error)),
+                Err(error) => panic!("error {} writing to file", error),
                 Ok(_) => (),
         };
 
