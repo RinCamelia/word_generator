@@ -6,3 +6,6 @@ authors = ["Sean Hagar <rcix2010@gmail.com>"]
 
 [dependencies.rand]
 git = "https://github.com/rust-lang/rand.git"
+
+[dependencies.rustc-serialize]
+rustc-serialize = "0.3.10"

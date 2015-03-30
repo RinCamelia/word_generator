@@ -1,8 +1,9 @@
-#![feature(core)]
 #![feature(collections)]
 
 extern crate rand;
+extern crate rustc_serialize;
 
+use rustc_serialize::*;
 use std::error::Error;
 use std::io::prelude::*;
 use std::fs::File;
@@ -14,12 +15,12 @@ fn main() {
 
     let mut file = File::create("words.txt").unwrap();
 
-    for x in 0..10 {
+    for _ in 0..10 {
         let mut word : String = make_word();
         word.push('\n');
         match file.write(word.as_bytes()) {
                 Err(error) => panic!("error {} writing to file", Error::description(&error)),
-                Ok(file) => (),
+                Ok(_) => (),
         };
 
     }
@@ -43,7 +44,7 @@ fn make_word() -> String {
     if rng.gen::<f32>() < leading_vowel_chance {
         word.push_str(&get_random_phoneme(&vowels));
     }
-    word.push_str(get_random_syllable().as_slice()); //minimum 1 normal syllable
+    word.push_str(&get_random_syllable()); //minimum 1 normal syllable
 
     let mut syllable_loop_iter = rng.gen_iter::<f32>();
 
@@ -52,7 +53,7 @@ fn make_word() -> String {
         match result {
             Some(x) => {
                 if x < current_chance_for_syllable {
-                    word.push_str(get_random_syllable().as_slice());
+                    word.push_str(&get_random_syllable());
                     current_chance_for_syllable *= syllable_decay_mult;
                 } else {
                     break
