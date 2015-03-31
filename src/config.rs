@@ -8,70 +8,71 @@ use std::fs::File;
 
 #[derive(RustcEncodable, RustcDecodable)]
 pub struct OutputSettings {
-    show_syllable_generation : bool,
-    show_word_rewrites : bool,
-    show_full_word_transforms : bool,
-    only_mark_rejects : bool,
+    pub show_syllable_generation : bool,
+    pub show_word_rewrites : bool,
+    pub show_full_word_transforms : bool,
+    pub only_mark_rejects : bool,
 }
 
 #[derive(RustcEncodable, RustcDecodable)]
 pub struct Grapheme {
-    string : String,
-    weight : usize
+    pub string : String,
+    pub weight : usize
 }
 
 #[derive(RustcEncodable, RustcDecodable)]
 pub struct GraphemeGroup {
-    name : String,
-    graphemes : Vec<Grapheme>,
+    pub name : String,
+    pub graphemes : Vec<Grapheme>,
 }
 
 #[derive(RustcEncodable, RustcDecodable)]
 pub struct Syllable {
-    string : String,
-    weight : usize,
-    only_first_syllable : bool,
-    only_last_syllable : bool
+    pub string : String,
+    pub weight : usize,
+    pub only_first_syllable : bool,
+    pub only_last_syllable : bool
 }
 
 #[derive(RustcEncodable, RustcDecodable)]
 pub struct Rewrite {
-    pattern : String,
-    replace : String
+    pub pattern : String,
+    pub replace : String
 }
 
 #[derive(RustcEncodable, RustcDecodable)]
 pub struct RewriteGroup {
-    syllable_rewrites : Vec<Rewrite>,
-    grapheme_rewrites : Vec<Rewrite>
+    pub syllable_rewrites : Vec<Rewrite>,
+    pub grapheme_rewrites : Vec<Rewrite>
 }
 
 #[derive(RustcEncodable, RustcDecodable)]
 pub struct RejectGroup {
-    syllable_rejects : Vec<String>,
-    grapheme_rejects : Vec<String>
+    pub syllable_rejects : Vec<String>,
+    pub grapheme_rejects : Vec<String>
 }
 
 #[derive(RustcEncodable, RustcDecodable)]
 pub struct GenerateSettings {
-    output_file : String,
-    syllable_decay_rate : f32,
-    max_syllables : usize,
-    word_count : usize,
-    rewrites_before_rejects : bool,
-    debug_use_static_wordlist : bool,
-    output_settings : OutputSettings,
+    pub output_file : String,
+    pub syllable_decay_rate : f32,
+    pub max_syllables : usize,
+    pub word_count : usize,
+    pub rewrites_before_rejects : bool,
+    pub debug_use_static_wordlist : bool,
+    pub output_settings : OutputSettings,
 }
 
 #[derive(RustcEncodable, RustcDecodable)]
 pub struct WordGeneratorConfig {
-    settings : GenerateSettings,
-    graphemes : Vec<GraphemeGroup>,
-    syllables : Vec<Syllable>,
-    rewrites : RewriteGroup,
-    rejects : RejectGroup
+    pub settings : GenerateSettings,
+    pub graphemes : Vec<GraphemeGroup>,
+    pub syllables : Vec<Syllable>,
+    pub rewrites : RewriteGroup,
+    pub rejects : RejectGroup
 }
 
+#[allow(dead_code)]
 pub fn generate_test_config() -> WordGeneratorConfig {
     WordGeneratorConfig {
         settings: GenerateSettings {
