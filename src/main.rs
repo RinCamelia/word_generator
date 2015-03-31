@@ -14,6 +14,7 @@ extern crate rustc_serialize;
 
 use config::*;
 use std::io::prelude::*;
+use rustc_serialize::*;
 use std::fs::File;
 use rand::Rng;
 use rand::distributions::{Weighted, WeightedChoice, IndependentSample};
@@ -26,6 +27,13 @@ static CONFIG_FILE_NAME: &'static str = "json_sample_config.json";
 
 fn main() {
     let config: WordGeneratorConfig = load_config(&CONFIG_FILE_NAME);
+
+    //let mut file = File::create(&CONFIG_FILE_NAME).unwrap();
+
+    /*match file.write(json::encode(&config).unwrap().as_bytes()) {
+        Ok(_) => (),
+        Err(err) => panic!("Error writing test config: {}", err),
+    }*/
 
     let mut first_syllable_list : Vec<Weighted<String>> = Vec::new();
     let mut last_syllable_list : Vec<Weighted<String>> = Vec::new();
@@ -69,10 +77,12 @@ fn main() {
         grapheme_groups.push((group.name.clone(), graphemes_converted));
     }
 
-    
 
-    let mut file = File::create(&config.settings.output_file).unwrap();
-    for _ in 0..config.settings.word_count {
+
+    let mut file = File::create(&config.output_settings.output_file).unwrap();
+
+
+    for _ in 0..config.output_settings.word_count {
 
         //generate a string of syllables
         // - parse config list of syllables into 3 lists, one for first syllable, one for last, and one for rest

@@ -1,35 +1,49 @@
 {
-    "settings": {
+    "output_settings": {
+        "show_syllable_generation": false,
+        "show_word_rewrites": false,
+        "show_full_word_transforms": false,
+        "only_mark_rejects": false,
         "output_file": "test",
+        "word_count": 10
+    },
+    "settings": {
         "syllable_decay_rate": 0.2,
         "max_syllables": 10,
-        "word_count": 10,
         "rewrites_before_rejects": false,
-        "debug_use_static_wordlist": false,
-        "output_settings": {
-            "show_syllable_generation": false,
-            "show_word_rewrites": false,
-            "show_full_word_transforms": false,
-            "only_mark_rejects": false
-        }
+        "debug_use_static_wordlist": false
     },
     "graphemes": [
         {
-            "name": "C",
+            "name": "c",
             "graphemes": [
-                { "string": "e", "weight": 10 }
+                {
+                    "string": "e",
+                    "weight": 10
+                }
             ]
         }
     ],
     "syllables": [
-        { "string": "CV", "weight": 20, "only_first_syllable": false, "only_last_syllable": false }
+        {
+            "string": "CV",
+            "weight": 20,
+            "only_first_syllable": false,
+            "only_last_syllable": false
+        }
     ],
     "rewrites": {
         "syllable_rewrites": [
-            { "pattern": "abc", "replace": "def"}
+            {
+                "pattern": "abc",
+                "replace": "def"
+            }
         ],
         "grapheme_rewrites": [
-            { "pattern": "abc", "replace": "def" }
+            {
+                "pattern": "abc",
+                "replace": "def"
+            }
         ]
     },
     "rejects": {
