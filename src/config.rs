@@ -1,6 +1,5 @@
 extern crate rustc_serialize;
 
-use std::error::Error;
 use rustc_serialize::*;
 use std::io::prelude::*;
 use std::fs::File;
@@ -141,12 +140,12 @@ pub fn load_config(config_name :&str) -> WordGeneratorConfig {
 
     match config_file.read_to_end(&mut file_buffer) {
         Ok(_) => (),
-        Err(error) => panic!("Error reading config: {}", Error::description(&error)),
+        Err(error) => panic!("Error reading config: {}", error),
     };
 
     let config_encoded: String = match String::from_utf8(file_buffer) {
         Ok(result) => result,
-        Err(error) => panic!("Error converting config u8 buffer to a String: {}", Error::description(&error)),
+        Err(error) => panic!("Error converting config u8 buffer to a String: {}", error),
     };
 
     match json::decode(&config_encoded) {
