@@ -1,4 +1,5 @@
 #![feature(collections)]
+#![feature(custom_derive)]
 
 //modules
 

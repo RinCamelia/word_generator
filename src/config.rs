@@ -5,7 +5,7 @@ use std::io::prelude::*;
 use std::fs::File;
 
 
-#[derive(RustcEncodable, RustcDecodable)]
+#[derive(RustcEncodable, RustcDecodable, clone)]
 pub struct OutputSettings {
     pub show_syllable_generation : bool,
     pub show_word_rewrites : bool,
@@ -15,19 +15,19 @@ pub struct OutputSettings {
     pub word_count : usize,
 }
 
-#[derive(RustcEncodable, RustcDecodable)]
+#[derive(RustcEncodable, RustcDecodable, clone)]
 pub struct Grapheme {
     pub string : String,
     pub weight : usize
 }
 
-#[derive(RustcEncodable, RustcDecodable)]
+#[derive(RustcEncodable, RustcDecodable, clone)]
 pub struct GraphemeGroup {
     pub name : String,
     pub graphemes : Vec<Grapheme>,
 }
 
-#[derive(RustcEncodable, RustcDecodable)]
+#[derive(RustcEncodable, RustcDecodable, clone)]
 pub struct Syllable {
     pub string : String,
     pub weight : usize,
@@ -35,25 +35,25 @@ pub struct Syllable {
     pub only_last_syllable : bool
 }
 
-#[derive(RustcEncodable, RustcDecodable)]
+#[derive(RustcEncodable, RustcDecodable, clone)]
 pub struct Rewrite {
     pub pattern : String,
     pub replace : String
 }
 
-#[derive(RustcEncodable, RustcDecodable)]
+#[derive(RustcEncodable, RustcDecodable, clone)]
 pub struct RewriteGroup {
     pub syllable_rewrites : Vec<Rewrite>,
     pub grapheme_rewrites : Vec<Rewrite>
 }
 
-#[derive(RustcEncodable, RustcDecodable)]
+#[derive(RustcEncodable, RustcDecodable, clone)]
 pub struct RejectGroup {
     pub syllable_rejects : Vec<String>,
     pub grapheme_rejects : Vec<String>
 }
 
-#[derive(RustcEncodable, RustcDecodable)]
+#[derive(RustcEncodable, RustcDecodable, clone)]
 pub struct GenerateSettings {
     pub syllable_decay_rate : f32,
     pub max_syllables : usize,
@@ -61,7 +61,7 @@ pub struct GenerateSettings {
     pub debug_use_static_wordlist : bool,
 }
 
-#[derive(RustcEncodable, RustcDecodable)]
+#[derive(RustcEncodable, RustcDecodable, clone)]
 pub struct WordGeneratorConfig {
     pub output_settings : OutputSettings,
     pub settings : GenerateSettings,
