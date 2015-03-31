@@ -13,7 +13,6 @@ extern crate rustc_serialize;
 //use
 
 use config::*;
-use std::error::Error;
 use std::io::prelude::*;
 use std::fs::File;
 use rand::Rng;
@@ -26,11 +25,65 @@ static CONFIG_FILE_NAME: &'static str = "json_sample_config.json";
 //functions
 
 fn main() {
-    let mut file = File::create("words.txt").unwrap();
-    let mut config: WordGeneratorConfig = load_config(&CONFIG_FILE_NAME);
+    let config: WordGeneratorConfig = load_config(&CONFIG_FILE_NAME);
+
+    let mut first_syllable_list : Vec<Weighted<String>> = Vec::new();
+    let mut last_syllable_list : Vec<Weighted<String>> = Vec::new();
+    let mut normal_syllable_list : Vec<Weighted<String>> = Vec::new();
 
 
-    for _ in 0..10 {
+    //generate weighted lists of syllable configurations in each syllable position
+
+    for syllable in config.syllables {
+        let syllable_weighted : Weighted<String> = Weighted{
+            weight: syllable.weight as u32,
+            item: syllable.string.clone()
+        };
+        //if the syllable is eligible for all positions
+        if !(syllable.only_first_syllable || syllable.only_last_syllable) {
+            normal_syllable_list.push(syllable_weighted.clone());
+            first_syllable_list.push(syllable_weighted.clone());
+            last_syllable_list.push(syllable_weighted.clone());
+        }
+        //these need to be separate ifs, as marking only first + only last syllable means it can be used for either
+        if syllable.only_first_syllable {
+            first_syllable_list.push(syllable_weighted.clone());
+        }
+        if syllable.only_last_syllable {
+            last_syllable_list.push(syllable_weighted.clone());
+        }
+
+    }
+
+    let mut grapheme_groups : Vec<(String, Vec<Weighted<String>>)> = Vec::new();
+
+    //convert list of graphemes in config into lists of Weighted
+    for group in config.graphemes {
+        let mut graphemes_converted : Vec<Weighted<String>> = Vec::new();
+
+        graphemes_converted.extend(
+            group.graphemes.iter().map(
+                |g: &Grapheme| Weighted{weight: g.weight as u32, item: g.string.clone() }
+                )
+            );
+        grapheme_groups.push((group.name.clone(), graphemes_converted));
+    }
+
+    
+
+    let mut file = File::create(&config.settings.output_file).unwrap();
+    for _ in 0..config.settings.word_count {
+
+        //generate a string of syllables
+        // - parse config list of syllables into 3 lists, one for first syllable, one for last, and one for rest
+
+
+
+        //apply syllable level rewrites and rejects
+        //generate graphemes for each syllable
+        //apply grapheme level rewrites and rejects
+        //write to file
+
         let mut word : String = make_word();
         word.push('\n');
         match file.write(word.as_bytes()) {
