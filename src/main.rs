@@ -1,5 +1,4 @@
 #![feature(collections)]
-#![feature(custom_derive)]
 
 //modules
 
@@ -14,6 +13,7 @@ extern crate rustc_serialize;
 //use
 
 use config::*;
+use word::*;
 use std::io::prelude::*;
 use rustc_serialize::*;
 use std::fs::File;
@@ -29,6 +29,7 @@ static CONFIG_FILE_NAME: &'static str = "json_sample_config.json";
 fn main() {
     let config: WordGeneratorConfig = load_config(&CONFIG_FILE_NAME);
 
+    //comment other code and uncomment these to emit a new test config
     //let mut file = File::create(&CONFIG_FILE_NAME).unwrap();
 
     /*match file.write(json::encode(&config).unwrap().as_bytes()) {
@@ -79,6 +80,16 @@ fn main() {
     }
 
 
+
+    let word_factory : WordFactory = WordFactory {
+        first_syllable_list : first_syllable_list,
+        normal_syllable_list : normal_syllable_list,
+        last_syllable_list : last_syllable_list,
+        graphemes : grapheme_groups,
+        settings : config.settings.clone(),
+        rewrites : config.rewrites.clone(),
+        rejects : config.rejects.clone(),
+    };
 
     let mut file = File::create(&config.output_settings.output_file).unwrap();
 
