@@ -15,22 +15,33 @@
     },
     "graphemes": [
         {
-            "name": "c",
+            "name": "C",
             "graphemes": [
-                {
-                    "string": "e",
-                    "weight": 10
-                }
+                { "string": "p", "weight": 10 },
+                { "string": "m", "weight": 10 },
+                { "string": "n", "weight": 10 },
+                { "string": "ń", "weight": 10 },
+                { "string": "t", "weight": 10 }
+            ]
+        },
+        {
+            "name": "V",
+            "graphemes": [
+                { "string": "i", "weight": 10 },
+                { "string": "e", "weight": 10 },
+                { "string": "é", "weight": 10 },
+                { "string": "a", "weight": 10 }
             ]
         }
     ],
     "syllables": [
-        {
-            "string": "CV",
-            "weight": 20,
-            "only_first_syllable": false,
-            "only_last_syllable": false
-        }
+        { "string": "CV", "weight": 20, "only_first_syllable": false, "only_last_syllable": false },
+        { "string": "VCV", "weight": 20, "only_first_syllable": false, "only_last_syllable": false },
+        { "string": "VV", "weight": 20, "only_first_syllable": false, "only_last_syllable": false },
+        { "string": "C", "weight": 20, "only_first_syllable": false, "only_last_syllable": false },
+        { "string": "F", "weight": 20, "only_first_syllable": true, "only_last_syllable": false },
+        { "string": "L", "weight": 20, "only_first_syllable": false, "only_last_syllable": true },
+        { "string": "B", "weight": 20, "only_first_syllable": true, "only_last_syllable": true }
     ],
     "rewrites": {
         "syllable_rewrites": [

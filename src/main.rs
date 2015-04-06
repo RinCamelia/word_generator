@@ -15,7 +15,7 @@ extern crate rustc_serialize;
 use config::*;
 use word::*;
 use std::io::prelude::*;
-use rustc_serialize::*;
+//use rustc_serialize::*;    //commented out as it is only used to emit test configs
 use std::fs::File;
 use rand::Rng;
 use rand::distributions::{Weighted, WeightedChoice, IndependentSample};
@@ -105,14 +105,23 @@ fn main() {
         //generate graphemes for each syllable
         //apply grapheme level rewrites and rejects
         //write to file
-
-        let mut word : String = make_word();
-        word.push('\n');
-        match file.write(word.as_bytes()) {
+        let mut word : Word = Word {
+                syllables : String::new(),
+                graphemes : String::new(),
+                syllable_rewrite_history : Vec::new(),
+                grapheme_rewrite_history : Vec::new(),
+                syllable_rejects : Vec::new(),
+                grapheme_rejects : Vec::new()
+            };
+        word_factory.generate_syllables(&mut word);
+        match file.write(word.syllables.as_bytes()) {
                 Err(error) => panic!("error {} writing to file", error),
                 Ok(_) => (),
         };
-
+        match file.write("\n".as_bytes()) {
+                Err(error) => panic!("error {} writing to file", error),
+                Ok(_) => (),
+        };
     }
 }
 
@@ -189,8 +198,7 @@ fn get_random_syllable() -> String {
     syllable
 }
 
-fn get_random_phoneme(
-    values : &Vec<Weighted<&str>>) -> String {
+fn get_random_phoneme(values : &Vec<Weighted<&str>>) -> String {
 
     let mut local_values : Vec<Weighted<&str>> = values.clone();
 
