@@ -4,7 +4,7 @@
         "show_word_rewrites": false,
         "show_full_word_transforms": false,
         "only_mark_rejects": false,
-        "output_file": "test",
+        "output_file": "words.txt",
         "word_count": 10
     },
     "settings": {
@@ -43,8 +43,8 @@
     "rewrites": {
         "syllable_rewrites": [
             {
-                "pattern": "VCVV",
-                "replace": "CV"
+                "pattern": "VV",
+                "replace": "V"
             }
         ],
         "grapheme_rewrites": [

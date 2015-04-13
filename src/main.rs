@@ -115,11 +115,13 @@ fn main() {
                 syllable_rejects : Vec::new(),
                 grapheme_rejects : Vec::new()
             };
+
         word_factory.generate_syllables(&mut word);
         word_factory.rewrite_syllables(&mut word);
         word_factory.generate_graphemes(&mut word);
-        word_factory.rewrite_syllables(&mut word);
-        match file.write(word.syllables.as_bytes()) {
+        word_factory.rewrite_graphemes(&mut word);
+
+        match file.write(get_word_syllables(&word).as_bytes()) {
                 Err(error) => panic!("error {} writing to file", error),
                 Ok(_) => (),
         };
