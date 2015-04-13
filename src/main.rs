@@ -87,7 +87,7 @@ fn main() {
         normal_syllable_list : normal_syllable_list,
         last_syllable_list : last_syllable_list,
         graphemes : grapheme_groups,
-        settings : config.settings.clone(),
+        generate_settings : config.generate_settings.clone(),
         rewrites : config.rewrites.clone(),
         rejects : config.rejects.clone(),
     };
@@ -108,7 +108,7 @@ fn main() {
 
         word_factory.generate_syllables(&mut word);
 
-        if (config.settings.rewrites_before_rejects) {
+        if (config.generate_settings.rewrites_before_rejects) {
             word_factory.rewrite_syllables(&mut word);
             word_factory.mark_syllable_rejects(&mut word);
         } else {
@@ -118,7 +118,7 @@ fn main() {
 
         word_factory.generate_graphemes(&mut word);
 
-        if (config.settings.rewrites_before_rejects) {
+        if (config.generate_settings.rewrites_before_rejects) {
             word_factory.rewrite_graphemes(&mut word);
             word_factory.mark_grapheme_rejects(&mut word);
         } else {

@@ -7,11 +7,10 @@
         "output_file": "words.txt",
         "word_count": 10
     },
-    "settings": {
+    "generate_settings": {
         "syllable_decay_rate": 0.2,
         "max_syllables": 10,
-        "rewrites_before_rejects": false,
-        "debug_use_static_wordlist": false
+        "rewrites_before_rejects": false
     },
     "graphemes": [
         {

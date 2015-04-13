@@ -7,7 +7,6 @@ use std::fs::File;
 
 #[derive(RustcEncodable, RustcDecodable, Clone)]
 pub struct OutputSettings {
-    pub show_syllable_generation : bool,
     pub show_word_rewrites : bool,
     pub show_full_word_transforms : bool,
     pub only_mark_rejects : bool,
@@ -58,13 +57,12 @@ pub struct GenerateSettings {
     pub syllable_decay_rate : f32,
     pub max_syllables : usize,
     pub rewrites_before_rejects : bool,
-    pub debug_use_static_wordlist : bool,
 }
 
 #[derive(RustcEncodable, RustcDecodable, Clone)]
 pub struct WordGeneratorConfig {
     pub output_settings : OutputSettings,
-    pub settings : GenerateSettings,
+    pub generate_settings : GenerateSettings,
     pub graphemes : Vec<GraphemeGroup>,
     pub syllables : Vec<Syllable>,
     pub rewrites : RewriteGroup,
@@ -74,16 +72,14 @@ pub struct WordGeneratorConfig {
 #[allow(dead_code)]
 pub fn generate_test_config() -> WordGeneratorConfig {
     WordGeneratorConfig {
-        settings: GenerateSettings {
+        generate_settings: GenerateSettings {
             syllable_decay_rate: 0.2,
             max_syllables: 10,
             rewrites_before_rejects: false,
-            debug_use_static_wordlist: false,
         },
         output_settings: OutputSettings {
             output_file: "test".to_string(),
             word_count: 10,
-            show_syllable_generation: false,
             show_word_rewrites: false,
             show_full_word_transforms: false,
             only_mark_rejects: false,
