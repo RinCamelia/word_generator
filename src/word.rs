@@ -111,17 +111,33 @@ impl WordGenerator for WordFactory {
         }
     }
     fn mark_syllable_rejects(&self, word: &mut Word) {
-
+        for reject in &self.rejects.syllable_rejects {
+            let reject_regex : Regex = match Regex::new(&reject) {
+                Ok(res) => res,
+                Err(err) => panic!("Error '{}' with regex '{}' in a reject, please verify that it is valid", err, &reject)
+            };
+            if reject_regex.is_match(&get_word_syllables(&word)) {
+                word.syllable_rejects.push(reject.clone());
+            }
+        }
     }
     fn mark_grapheme_rejects(&self, word: &mut Word) {
-
+        for reject in &self.rejects.grapheme_rejects {
+            let reject_regex : Regex = match Regex::new(&reject) {
+                Ok(res) => res,
+                Err(err) => panic!("Error '{}' with regex '{}' in a reject, please verify that it is valid", err, &reject)
+            };
+            if reject_regex.is_match(&get_word_syllables(&word)) {
+                word.grapheme_rejects.push(reject.clone());
+            }
+        }
     }
 }
 
 fn apply_single_rewrite(rewrite : &String, replace : &String, source : &String) -> String {
     let rewrite_regex : Regex = match Regex::new(&rewrite) {
         Ok(res) => res,
-        Err(err) => panic!("Error '{}' with regex '{}', please verify that it is valid", err, &rewrite)
+        Err(err) => panic!("Error '{}' with regex '{}' in a rewrite, please verify that it is valid", err, &rewrite)
     };
     rewrite_regex.replace_all(&source, NoExpand(replace))
 }

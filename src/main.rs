@@ -118,8 +118,12 @@ fn main() {
 
         word_factory.generate_syllables(&mut word);
         word_factory.rewrite_syllables(&mut word);
+        word_factory.mark_syllable_rejects(&mut word);
+
         word_factory.generate_graphemes(&mut word);
         word_factory.rewrite_graphemes(&mut word);
+        word_factory.mark_grapheme_rejects(&mut word);
+
 
         match file.write(get_word_syllables(&word).as_bytes()) {
                 Err(error) => panic!("error {} writing to file", error),
