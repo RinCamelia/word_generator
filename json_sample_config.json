@@ -38,10 +38,7 @@
         { "string": "CV", "weight": 20, "only_first_syllable": false, "only_last_syllable": false },
         { "string": "VCV", "weight": 20, "only_first_syllable": false, "only_last_syllable": false },
         { "string": "VV", "weight": 20, "only_first_syllable": false, "only_last_syllable": false },
-        { "string": "C", "weight": 20, "only_first_syllable": false, "only_last_syllable": false },
-        { "string": "F", "weight": 20, "only_first_syllable": true, "only_last_syllable": false },
-        { "string": "L", "weight": 20, "only_first_syllable": false, "only_last_syllable": true },
-        { "string": "B", "weight": 20, "only_first_syllable": true, "only_last_syllable": true }
+        { "string": "C", "weight": 20, "only_first_syllable": false, "only_last_syllable": false }
     ],
     "rewrites": {
         "syllable_rewrites": [

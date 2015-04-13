@@ -1,4 +1,5 @@
 #![feature(collections)]
+#![feature(unicode)]
 
 //modules
 
@@ -114,7 +115,8 @@ fn main() {
                 grapheme_rejects : Vec::new()
             };
         word_factory.generate_syllables(&mut word);
-        match file.write(word.syllables.as_bytes()) {
+        word_factory.generate_graphemes(&mut word);
+        match file.write(word.graphemes.as_bytes()) {
                 Err(error) => panic!("error {} writing to file", error),
                 Ok(_) => (),
         };

@@ -87,7 +87,20 @@ impl WordGenerator for WordFactory {
     }
 
     fn generate_graphemes(&self, word: &mut Word) {
+        assert!(!word.syllables.is_empty(), "Cannot call generate_graphemes on a word without a syllable string");
 
+        let mut grapheme_vector = Vec::new();
+        for grapheme in word.syllables.graphemes(false) {
+            grapheme_vector.push(syllable_element_to_random_grapheme(&self.graphemes, &String::from_str(&grapheme)));
+        }
+
+        word.graphemes = grapheme_vector.iter().fold(String::new(), |accumulator : String, character| { let mut new_str = String::from_str(&accumulator); new_str.push_str(&character); new_str});
+
+        for grapheme in word.syllables.graphemes(false) {
+            //currently using .last() because its easy and i don't care about multiple matches. Will either implement filtering elsewhere, throw errors on redefining a group, or find a way to pull the first element
+
+
+        }
     }
     fn rewrite_syllables(&self, word: &mut Word) {
 
@@ -101,6 +114,15 @@ impl WordGenerator for WordFactory {
     fn mark_grapheme_rejects(&self, word: &mut Word) {
 
     }
+}
+
+fn syllable_element_to_random_grapheme(grapheme_groups : &Vec<(String, Vec<Weighted<String>>)>, syllable_element : &String) -> String {
+    let matching_grapheme_group : Vec<Weighted<String>> = match grapheme_groups.iter().filter(|ref i| i.0 == *syllable_element).map(|ref i| i.1.clone()).last() {
+        Some(res) => res,
+
+        None => panic!("No grapheme group found for syllable element {}, check your syllable sets", &syllable_element)
+    };
+    get_random_from_weighted(&matching_grapheme_group)
 }
 
 fn get_random_from_weighted(values : &Vec<Weighted<String>>) -> String {
