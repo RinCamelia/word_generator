@@ -10,6 +10,7 @@ mod word;
 
 extern crate rand;
 extern crate rustc_serialize;
+extern crate regex;
 
 //use
 
@@ -115,8 +116,10 @@ fn main() {
                 grapheme_rejects : Vec::new()
             };
         word_factory.generate_syllables(&mut word);
+        word_factory.rewrite_syllables(&mut word);
         word_factory.generate_graphemes(&mut word);
-        match file.write(word.graphemes.as_bytes()) {
+        word_factory.rewrite_syllables(&mut word);
+        match file.write(word.syllables.as_bytes()) {
                 Err(error) => panic!("error {} writing to file", error),
                 Ok(_) => (),
         };

@@ -4,6 +4,7 @@ use config::*;
 use rand::*;
 use rand::distributions::{Weighted, WeightedChoice, IndependentSample};
 use regex::Regex;
+use regex::NoExpand;
 
 pub struct Word {
     pub syllables : String,
@@ -91,17 +92,23 @@ impl WordGenerator for WordFactory {
         assert!(!word.syllables.is_empty(), "Cannot call generate_graphemes on a word without a syllable string");
 
         let mut grapheme_vector = Vec::new();
-        for grapheme in word.syllables.graphemes(false) {
+        for grapheme in get_word_syllables(&word).graphemes(false) {
             grapheme_vector.push(syllable_element_to_random_grapheme(&self.graphemes, &String::from_str(&grapheme)));
         }
 
         word.graphemes = grapheme_vector.iter().fold(String::new(), |accumulator : String, character| { let mut new_str = String::from_str(&accumulator); new_str.push_str(&character); new_str});
     }
     fn rewrite_syllables(&self, word: &mut Word) {
-
+        for rewrite in &self.rewrites.syllable_rewrites {
+            let rewritten_string = apply_single_rewrite(&rewrite.pattern, &rewrite.replace, &word.syllables);
+            word.syllable_rewrite_history.push((rewrite.pattern.clone(), rewritten_string));
+        }
     }
     fn rewrite_graphemes(&self, word: &mut Word) {
-
+        for rewrite in &self.rewrites.grapheme_rewrites {
+            let rewritten_string = apply_single_rewrite(&rewrite.pattern, &rewrite.replace, &word.graphemes);
+            word.grapheme_rewrite_history.push((rewrite.pattern.clone(), rewritten_string));
+        }
     }
     fn mark_syllable_rejects(&self, word: &mut Word) {
 
@@ -111,11 +118,19 @@ impl WordGenerator for WordFactory {
     }
 }
 
+fn apply_single_rewrite(rewrite : &String, replace : &String, source : &String) -> String {
+    let rewrite_regex : Regex = match Regex::new(&rewrite) {
+        Ok(res) => res,
+        Err(err) => panic!("Error '{}' with regex '{}', please verify that it is valid", err, &rewrite)
+    };
+    rewrite_regex.replace_all(&source, NoExpand(replace))
+}
+
 fn syllable_element_to_random_grapheme(grapheme_groups : &Vec<(String, Vec<Weighted<String>>)>, syllable_element : &String) -> String {
     let matching_grapheme_group : Vec<Weighted<String>> = match grapheme_groups.iter().filter(|ref i| i.0 == *syllable_element).map(|ref i| i.1.clone()).last() {
         Some(res) => res,
 
-        None => panic!("No grapheme group found for syllable element {}, check your syllable sets", &syllable_element)
+        None => panic!("No grapheme group found for syllable element {}, check your syllable sets and rewrites", &syllable_element)
     };
     get_random_from_weighted(&matching_grapheme_group)
 }
@@ -128,4 +143,18 @@ fn get_random_from_weighted(values : &Vec<Weighted<String>>) -> String {
     let mut rng = rand::thread_rng();
 
     selector.ind_sample(&mut rng)
+}
+
+//temporary function to properly obtain rewritten syllables and graphemes for a word, needs to be refactored into a word trait
+pub fn get_word_syllables(word : &Word) -> String {
+    match word.syllable_rewrite_history.last() {
+        Some(result) => result.1.clone(),
+        None => word.syllables.clone()
+    }
+}
+pub fn get_word_graphemes(word : &Word) -> String {
+    match word.grapheme_rewrite_history.last() {
+        Some(result) => result.1.clone(),
+        None => word.syllables.clone()
+    }
 }

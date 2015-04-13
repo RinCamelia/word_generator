@@ -43,8 +43,8 @@
     "rewrites": {
         "syllable_rewrites": [
             {
-                "pattern": "abc",
-                "replace": "def"
+                "pattern": "VCVV",
+                "replace": "CV"
             }
         ],
         "grapheme_rewrites": [
