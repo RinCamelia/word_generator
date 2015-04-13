@@ -97,15 +97,6 @@ fn main() {
 
     for _ in 0..config.output_settings.word_count {
 
-        //generate a string of syllables
-        // - parse config list of syllables into 3 lists, one for first syllable, one for last, and one for rest
-
-
-
-        //apply syllable level rewrites and rejects
-        //generate graphemes for each syllable
-        //apply grapheme level rewrites and rejects
-        //write to file
         let mut word : Word = Word {
                 syllables : String::new(),
                 graphemes : String::new(),
@@ -116,12 +107,24 @@ fn main() {
             };
 
         word_factory.generate_syllables(&mut word);
-        word_factory.rewrite_syllables(&mut word);
-        word_factory.mark_syllable_rejects(&mut word);
+
+        if (config.settings.rewrites_before_rejects) {
+            word_factory.rewrite_syllables(&mut word);
+            word_factory.mark_syllable_rejects(&mut word);
+        } else {
+            word_factory.mark_syllable_rejects(&mut word);
+            word_factory.rewrite_syllables(&mut word);
+        }
 
         word_factory.generate_graphemes(&mut word);
-        word_factory.rewrite_graphemes(&mut word);
-        word_factory.mark_grapheme_rejects(&mut word);
+
+        if (config.settings.rewrites_before_rejects) {
+            word_factory.rewrite_graphemes(&mut word);
+            word_factory.mark_grapheme_rejects(&mut word);
+        } else {
+            word_factory.mark_grapheme_rejects(&mut word);
+            word_factory.rewrite_graphemes(&mut word);
+        }
 
 
         match file.write(get_word_graphemes(&word).as_bytes()) {
