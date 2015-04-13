@@ -45,7 +45,7 @@ fn main() {
 
     //generate weighted lists of syllable configurations in each syllable position
 
-    for syllable in config.syllables {
+    for syllable in &config.syllables {
         let syllable_weighted : Weighted<String> = Weighted{
             weight: syllable.weight as u32,
             item: syllable.string.clone()
@@ -66,20 +66,7 @@ fn main() {
 
     }
 
-    let mut grapheme_groups : Vec<(String, Vec<Weighted<String>>)> = Vec::new();
-
-    //convert list of graphemes in config into lists of Weighted
-    for group in config.graphemes {
-        let mut graphemes_converted : Vec<Weighted<String>> = Vec::new();
-
-        graphemes_converted.extend(
-            group.graphemes.iter().map(
-                |g: &Grapheme| Weighted{weight: g.weight as u32, item: g.string.clone() }
-                )
-            );
-        grapheme_groups.push((group.name.clone(), graphemes_converted));
-    }
-
+    let grapheme_groups : Vec<(String, Vec<Weighted<String>>)> = transform_graphemes(&config.graphemes);
 
 
     let word_factory : WordFactory = WordFactory {
@@ -95,38 +82,7 @@ fn main() {
     let mut file = File::create(&config.output_settings.output_file).unwrap();
 
 
-    for _ in 0..config.output_settings.word_count {
-
-        let mut word : Word = Word {
-                syllables : String::new(),
-                graphemes : String::new(),
-                syllable_rewrite_history : Vec::new(),
-                grapheme_rewrite_history : Vec::new(),
-                syllable_rejects : Vec::new(),
-                grapheme_rejects : Vec::new()
-            };
-
-        word_factory.generate_syllables(&mut word);
-
-        if (config.generate_settings.rewrites_before_rejects) {
-            word_factory.rewrite_syllables(&mut word);
-            word_factory.mark_syllable_rejects(&mut word);
-        } else {
-            word_factory.mark_syllable_rejects(&mut word);
-            word_factory.rewrite_syllables(&mut word);
-        }
-
-        word_factory.generate_graphemes(&mut word);
-
-        if (config.generate_settings.rewrites_before_rejects) {
-            word_factory.rewrite_graphemes(&mut word);
-            word_factory.mark_grapheme_rejects(&mut word);
-        } else {
-            word_factory.mark_grapheme_rejects(&mut word);
-            word_factory.rewrite_graphemes(&mut word);
-        }
-
-
+    for word in generate_word_list(&config, &word_factory) {
         match file.write(get_word_graphemes(&word).as_bytes()) {
                 Err(error) => panic!("error {} writing to file", error),
                 Ok(_) => (),
@@ -136,4 +92,60 @@ fn main() {
                 Ok(_) => (),
         };
     }
+}
+
+fn generate_word_list(config : &WordGeneratorConfig, word_factory : &WordFactory) -> Vec<Word> {
+    let mut word_list : Vec<Word> = Vec::new();
+
+    for _ in 0..config.output_settings.word_count {
+
+        let mut word : Word = Word {
+            syllables : String::new(),
+            graphemes : String::new(),
+            syllable_rewrite_history : Vec::new(),
+            grapheme_rewrite_history : Vec::new(),
+            syllable_rejects : Vec::new(),
+            grapheme_rejects : Vec::new()
+        };
+
+        word_factory.generate_syllables(&mut word);
+
+        if config.generate_settings.rewrites_before_rejects {
+            word_factory.rewrite_syllables(&mut word);
+            word_factory.mark_syllable_rejects(&mut word);
+        } else {
+            word_factory.mark_syllable_rejects(&mut word);
+            word_factory.rewrite_syllables(&mut word);
+        };
+
+        word_factory.generate_graphemes(&mut word);
+
+        if config.generate_settings.rewrites_before_rejects {
+            word_factory.rewrite_graphemes(&mut word);
+            word_factory.mark_grapheme_rejects(&mut word);
+        } else {
+            word_factory.mark_grapheme_rejects(&mut word);
+            word_factory.rewrite_graphemes(&mut word);
+        };
+        word_list.push(word);
+    }
+    word_list
+}
+
+//unwraps a list of GraphemeGroups into a tuple list of String and Vec<Weighted<String>>, mostly due to requirement of Weighted for random weighted samples later
+fn transform_graphemes(graphemes : &Vec<GraphemeGroup>) -> Vec<(String, Vec<Weighted<String>>)> {
+
+    let mut grapheme_groups : Vec<(String, Vec<Weighted<String>>)> = Vec::new();
+
+    for group in graphemes {
+        let mut graphemes_converted : Vec<Weighted<String>> = Vec::new();
+
+        graphemes_converted.extend(
+            group.graphemes.iter().map(
+                |g: &Grapheme| Weighted{weight: g.weight as u32, item: g.string.clone() }
+                )
+            );
+        grapheme_groups.push((group.name.clone(), graphemes_converted));
+    }
+    grapheme_groups
 }

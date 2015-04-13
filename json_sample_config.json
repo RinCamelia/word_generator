@@ -1,6 +1,5 @@
 {
     "output_settings": {
-        "show_syllable_generation": false,
         "show_word_rewrites": false,
         "show_full_word_transforms": false,
         "only_mark_rejects": false,
