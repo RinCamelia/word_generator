@@ -23,7 +23,7 @@ use rand::distributions::Weighted;
 
 //static variables
 
-static CONFIG_FILE_NAME: &'static str = "json_sample_config.json";
+static CONFIG_FILE_NAME: &'static str = "main_config.json";
 
 //functions
 
