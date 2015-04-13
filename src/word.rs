@@ -3,6 +3,7 @@ extern crate rand;
 use config::*;
 use rand::*;
 use rand::distributions::{Weighted, WeightedChoice, IndependentSample};
+use regex::Regex;
 
 pub struct Word {
     pub syllables : String,
@@ -95,12 +96,6 @@ impl WordGenerator for WordFactory {
         }
 
         word.graphemes = grapheme_vector.iter().fold(String::new(), |accumulator : String, character| { let mut new_str = String::from_str(&accumulator); new_str.push_str(&character); new_str});
-
-        for grapheme in word.syllables.graphemes(false) {
-            //currently using .last() because its easy and i don't care about multiple matches. Will either implement filtering elsewhere, throw errors on redefining a group, or find a way to pull the first element
-
-
-        }
     }
     fn rewrite_syllables(&self, word: &mut Word) {
 
