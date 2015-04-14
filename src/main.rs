@@ -83,6 +83,10 @@ fn main() {
 
 
     for word in generate_word_list(&config, &word_factory) {
+        //if the word has been rejected then ignore it and don't print it
+        if word.syllable_rejects.len() > 0 || word.grapheme_rejects.len() > 0 {
+            continue;
+        }
         match file.write(get_word_graphemes(&word).as_bytes()) {
                 Err(error) => panic!("error {} writing to file", error),
                 Ok(_) => (),
