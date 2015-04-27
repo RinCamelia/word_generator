@@ -171,6 +171,6 @@ pub fn get_word_syllables(word : &Word) -> String {
 pub fn get_word_graphemes(word : &Word) -> String {
     match word.grapheme_rewrite_history.last() {
         Some(result) => result.1.clone(),
-        None => word.syllables.clone()
+        None => word.graphemes.clone()
     }
 }
