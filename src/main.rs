@@ -103,7 +103,8 @@ fn main() {
 fn generate_word_list(config : &WordGeneratorConfig, word_factory : &WordFactory) -> Vec<Word> {
     let mut word_list : Vec<Word> = Vec::new();
 
-    for _ in 0..config.output_settings.word_count {
+    while word_list.iter().filter(|word| word.syllable_rejects.len() == 0 && word.grapheme_rejects.len() == 0).count() < config.output_settings.word_count {
+    //for _ in 0..config.output_settings.word_count {
 
         let mut word : Word = Word {
             syllables : String::new(),
