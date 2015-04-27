@@ -127,7 +127,7 @@ impl WordGenerator for WordFactory {
                 Ok(res) => res,
                 Err(err) => panic!("Error '{}' with regex '{}' in a reject, please verify that it is valid", err, &reject)
             };
-            if reject_regex.is_match(&get_word_syllables(&word)) {
+            if reject_regex.is_match(&get_word_graphemes(&word)) {
                 word.grapheme_rejects.push(reject.clone());
             }
         }
