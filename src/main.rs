@@ -43,20 +43,22 @@ fn main() {
     let mut normal_syllable_list : Vec<Weighted<String>> = Vec::new();
 
 
-    //generate weighted lists of syllable configurations in each syllable position
+    //In-memory, syllables are stored as 'first-only', 'last only', and 'rest of the word' syllable lists.
+    //Aside from the impracticality of iterating and manipulating the config data directly every time I
+    //want to pick a syllable, I chose this structure as it made implementing syllable construction
+    //straightforward while allowing syllables to be constrained to first or last positions. This may end
+    //up getting removed later.
 
     for syllable in &config.syllables {
         let syllable_weighted : Weighted<String> = Weighted{
             weight: syllable.weight as u32,
             item: syllable.string.clone()
         };
-        //if the syllable is eligible for all positions
         if !(syllable.only_first_syllable || syllable.only_last_syllable) {
             normal_syllable_list.push(syllable_weighted.clone());
             first_syllable_list.push(syllable_weighted.clone());
             last_syllable_list.push(syllable_weighted.clone());
         }
-        //these need to be separate ifs, as marking only first + only last syllable means it can be used for either
         if syllable.only_first_syllable {
             first_syllable_list.push(syllable_weighted.clone());
         }
@@ -66,6 +68,7 @@ fn main() {
 
     }
 
+    //transform_graphemes is used to convert Graphemes to Weighted<String>s. This is done because
     let grapheme_groups : Vec<(String, Vec<Weighted<String>>)> = transform_graphemes(&config.graphemes);
 
 
@@ -81,9 +84,8 @@ fn main() {
 
     let mut file = File::create(&config.output_settings.output_file).unwrap();
 
-
+    //todo: rewrite to generate config-specified number of words even in the case of rejects, this discards rejected words and doesn't replace them
     for word in generate_word_list(&config, &word_factory) {
-        //if the word has been rejected then ignore it and don't print it
         if word.syllable_rejects.len() > 0 || word.grapheme_rejects.len() > 0 {
             continue;
         }
@@ -114,6 +116,8 @@ fn generate_word_list(config : &WordGeneratorConfig, word_factory : &WordFactory
 
         word_factory.generate_syllables(&mut word);
 
+        //at first glance this doesnt look like it's doing much - marking rejects operate on the final
+        //word string so rewriting before or after will make a difference
         if config.generate_settings.rewrites_before_rejects {
             word_factory.rewrite_syllables(&mut word);
             word_factory.mark_syllable_rejects(&mut word);
@@ -136,7 +140,8 @@ fn generate_word_list(config : &WordGeneratorConfig, word_factory : &WordFactory
     word_list
 }
 
-//unwraps a list of GraphemeGroups into a tuple list of String and Vec<Weighted<String>>, mostly due to requirement of Weighted for random weighted samples later
+//unwraps a list of GraphemeGroups into a tuple list of String and Vec<Weighted<String>>
+//Stored as a separate structure because JSON data would not be stored as desired for config otherwise
 fn transform_graphemes(graphemes : &Vec<GraphemeGroup>) -> Vec<(String, Vec<Weighted<String>>)> {
 
     let mut grapheme_groups : Vec<(String, Vec<Weighted<String>>)> = Vec::new();
