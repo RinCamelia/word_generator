@@ -2,14 +2,14 @@
     "output_settings": {
         "show_word_rewrites": false,
         "show_full_word_transforms": false,
-        "only_mark_rejects": false,
+        "only_mark_rejects": true,
         "output_file": "words.txt",
         "word_count": 10
     },
     "generate_settings": {
         "syllable_decay_rate": 0.2,
         "max_syllables": 10,
-        "rewrites_before_rejects": false
+        "rewrites_before_rejects": true
     },
     "graphemes": [
         {
@@ -54,10 +54,10 @@
     },
     "rejects": {
         "syllable_rejects": [
-            "abc"
+            "VVV"
         ],
         "grapheme_rejects": [
-            "abc"
+            "é"
         ]
     }
 }

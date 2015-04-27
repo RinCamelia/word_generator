@@ -82,14 +82,26 @@ fn main() {
         rejects : config.rejects.clone(),
     };
 
+    write_list_simple(&generate_word_list(&config, &word_factory), &config);
+}
+
+fn write_list_simple(word_list: &Vec<Word>, config : &WordGeneratorConfig) {
     let mut file = File::create(&config.output_settings.output_file).unwrap();
 
-    //todo: rewrite to generate config-specified number of words even in the case of rejects, this discards rejected words and doesn't replace them
-    for word in generate_word_list(&config, &word_factory) {
+    for word in word_list {
+        let mut postfix :String = String::new();
         if word.syllable_rejects.len() > 0 || word.grapheme_rejects.len() > 0 {
-            continue;
+            if config.output_settings.only_mark_rejects {
+                postfix = format_word_rejects(&word);
+            } else {
+                continue;
+            }
         }
         match file.write(get_word_graphemes(&word).as_bytes()) {
+                Err(error) => panic!("error {} writing to file", error),
+                Ok(_) => (),
+        };
+        match file.write(postfix.as_bytes()) {
                 Err(error) => panic!("error {} writing to file", error),
                 Ok(_) => (),
         };
@@ -100,11 +112,48 @@ fn main() {
     }
 }
 
+
+//ultimate goal is to emit formatted strings like this:
+//qwe: due to syllable rejects []
+//qwe: due to grapheme rejects []
+//qwe: due to syllable rejects [] and due to grapheme rejects []
+fn format_word_rejects(word : &Word) -> String {
+    let mut result : String = String::from_str(": due to ");
+    if word.syllable_rejects.len() > 0 {
+        result.push_str("syllable rejects ");
+        result = word.syllable_rejects.iter().fold(result.clone(),
+                                                |accumulator : String, character| {
+                                                    let mut new_str = String::from_str(&accumulator);
+                                                    new_str.push_str(&character);
+                                                    new_str.push_str(", ");
+                                                    new_str
+                                                });
+        if word.grapheme_rejects.len() > 0 {
+            result.push_str("and grapheme rejects ");
+        }
+    }
+    if word.grapheme_rejects.len() > 0 {
+        if word.syllable_rejects.len() == 0 {
+            result.push_str("grapheme rejects ");
+        }
+
+        result = word.grapheme_rejects.iter().fold(result.clone(),
+                                                |accumulator : String, character| {
+                                                    let mut new_str = String::from_str(&accumulator);
+                                                    new_str.push_str(&character);
+                                                    new_str.push_str(", ");
+                                                    new_str
+                                                });
+    }
+    //please note: string always ends with ", " because the fold()s above are unaware of what the last reject is
+    result
+}
+
+
 fn generate_word_list(config : &WordGeneratorConfig, word_factory : &WordFactory) -> Vec<Word> {
     let mut word_list : Vec<Word> = Vec::new();
 
     while word_list.iter().filter(|word| word.syllable_rejects.len() == 0 && word.grapheme_rejects.len() == 0).count() < config.output_settings.word_count {
-    //for _ in 0..config.output_settings.word_count {
 
         let mut word : Word = Word {
             syllables : String::new(),
