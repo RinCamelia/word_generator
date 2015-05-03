@@ -54,7 +54,9 @@
     },
     "rejects": {
         "syllable_rejects": [
-            "VVV"
+            "VVV",
+                "VVV",
+                    "VVV"
         ],
         "grapheme_rejects": [
             "é"

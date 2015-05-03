@@ -116,36 +116,72 @@ fn write_list_simple(word_list: &Vec<Word>, config : &WordGeneratorConfig) {
 //ultimate goal is to emit formatted strings like this:
 //qwe: due to syllable rejects []
 //qwe: due to grapheme rejects []
-//qwe: due to syllable rejects [] and due to grapheme rejects []
+//qwe: due to syllable rejects [] and grapheme rejects []
 fn format_word_rejects(word : &Word) -> String {
+    if word.syllable_rejects.len() == 0 && word.grapheme_rejects.len() == 0 { return String::from_str(""); }
     let mut result : String = String::from_str(": due to ");
-    if word.syllable_rejects.len() > 0 {
-        result.push_str("syllable rejects ");
-        result = word.syllable_rejects.iter().fold(result.clone(),
-                                                |accumulator : String, character| {
-                                                    let mut new_str = String::from_str(&accumulator);
-                                                    new_str.push_str(&character);
-                                                    new_str.push_str(", ");
-                                                    new_str
-                                                });
-        if word.grapheme_rejects.len() > 0 {
-            result.push_str("and grapheme rejects ");
-        }
-    }
-    if word.grapheme_rejects.len() > 0 {
-        if word.syllable_rejects.len() == 0 {
-            result.push_str("grapheme rejects ");
-        }
+    match word.syllable_rejects.len() {
+        0 => (),
+        1 => {
+            result.push_str("syllable reject ");
+            result.push_str(&word.syllable_rejects[0]);
 
-        result = word.grapheme_rejects.iter().fold(result.clone(),
-                                                |accumulator : String, character| {
-                                                    let mut new_str = String::from_str(&accumulator);
-                                                    new_str.push_str(&character);
-                                                    new_str.push_str(", ");
-                                                    new_str
-                                                });
+        },
+        2 => {
+            result.push_str("syllable rejects ");
+            result.push_str(&word.syllable_rejects[0]);
+            result.push_str("and ");
+            result.push_str(&word.syllable_rejects[1]);
+        },
+        _ => {
+            result.push_str("syllable rejects ");
+
+            //right now, rust has no easy way to trim arbitrary numbers of characters off the end of a string - so i have to count manually and stop adding commas at the last reject entry, otherwise there will be an errant ", " added to the end
+            let mut count : usize = 0;
+            let length = word.syllable_rejects.len();
+            for reject in &word.syllable_rejects {
+                result.push_str(&reject);
+                if count < length - 1 {
+                    result.push_str(", ");
+                }
+
+                count = count + 1;
+            }
+
+        },
     }
-    //please note: string always ends with ", " because the fold()s above are unaware of what the last reject is
+    if word.syllable_rejects.len() > 0 && word.grapheme_rejects.len() > 0 {
+        result.push_str(", and due to ");
+    }
+    match word.grapheme_rejects.len() {
+        0 => (),
+        1 => {
+            result.push_str("grapheme reject ");
+            result.push_str(&word.grapheme_rejects[0]);
+
+        },
+        2 => {
+            result.push_str("grapheme rejects ");
+            result.push_str(&word.grapheme_rejects[0]);
+            result.push_str("and ");
+            result.push_str(&word.grapheme_rejects[1]);
+        },
+        _ => {
+            result.push_str("grapheme rejects ");
+
+            //right now, rust has no easy way to trim arbitrary numbers of characters off the end of a string - so i have to count manually and stop adding commas at the last reject entry, otherwise there will be an errant ", " added to the end
+            let mut count : usize = 0;
+            let length = word.grapheme_rejects.len();
+            for reject in &word.grapheme_rejects {
+                result.push_str(&reject);
+                if count < length - 1 {
+                    result.push_str(", ");
+                }
+
+                count = count + 1;
+            }
+        },
+    }
     result
 }
 
