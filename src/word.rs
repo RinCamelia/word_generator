@@ -6,11 +6,12 @@ use rand::distributions::{Weighted, WeightedChoice, IndependentSample};
 use regex::Regex;
 use regex::NoExpand;
 
+
 pub struct Word {
     pub syllables : String,
     pub graphemes : String,
-    pub syllable_rewrite_history : Vec<(String, String)>,
-    pub grapheme_rewrite_history : Vec<(String, String)>,
+    pub syllable_rewrite_history : Vec<(Rewrite, String)>,
+    pub grapheme_rewrite_history : Vec<(Rewrite, String)>,
     pub syllable_rejects : Vec<String>,
     pub grapheme_rejects : Vec<String>,
 }
@@ -101,13 +102,13 @@ impl WordGenerator for WordFactory {
     fn rewrite_syllables(&self, word: &mut Word) {
         for rewrite in &self.rewrites.syllable_rewrites {
             let rewritten_string = apply_single_rewrite(&rewrite.pattern, &rewrite.replace, &word.syllables);
-            word.syllable_rewrite_history.push((rewrite.pattern.clone(), rewritten_string));
+            word.syllable_rewrite_history.push((rewrite.clone(), rewritten_string));
         }
     }
     fn rewrite_graphemes(&self, word: &mut Word) {
         for rewrite in &self.rewrites.grapheme_rewrites {
             let rewritten_string = apply_single_rewrite(&rewrite.pattern, &rewrite.replace, &word.graphemes);
-            word.grapheme_rewrite_history.push((rewrite.pattern.clone(), rewritten_string));
+            word.grapheme_rewrite_history.push((rewrite.clone(), rewritten_string));
         }
     }
     fn mark_syllable_rejects(&self, word: &mut Word) {

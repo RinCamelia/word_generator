@@ -89,19 +89,28 @@ fn write_list_simple(word_list: &Vec<Word>, config : &WordGeneratorConfig) {
     let mut file = File::create(&config.output_settings.output_file).unwrap();
 
     for word in word_list {
-        let mut postfix :String = String::new();
+        let mut result : String = get_word_graphemes(&word);
+
+        //note: we are specifically continue-ing out of this loop in a sub-if to implement mark vs drop behavior
         if word.syllable_rejects.len() > 0 || word.grapheme_rejects.len() > 0 {
             if config.output_settings.only_mark_rejects {
-                postfix = format_word_rejects(&word);
+                result = format!("{}{}", result, format_word_rejects(&word));
             } else {
                 continue;
             }
         }
-        match file.write(get_word_graphemes(&word).as_bytes()) {
-                Err(error) => panic!("error {} writing to file", error),
-                Ok(_) => (),
-        };
-        match file.write(postfix.as_bytes()) {
+
+        if config.output_settings.show_syllable_strings {
+            result = format!("{} ({})", result, get_word_syllables(&word));
+            if config.output_settings.show_word_rewrites {
+                result = format!("{}\n{}\n\n", result, format_transforms(&word.syllables, &word.syllable_rewrite_history));
+            }
+        }
+        if config.output_settings.show_word_rewrites {
+            result = format!("{}\n{}\n\n", result, format_transforms(&word.graphemes, &word.grapheme_rewrite_history));
+        }
+
+        match file.write(result.as_bytes()) {
                 Err(error) => panic!("error {} writing to file", error),
                 Ok(_) => (),
         };
@@ -112,6 +121,18 @@ fn write_list_simple(word_list: &Vec<Word>, config : &WordGeneratorConfig) {
     }
 }
 
+fn format_transforms(original : &String, rewrite_history : &Vec<(Rewrite, String)>) -> String {
+    let mut result : String = String::from_str("----\n");
+    let mut current_previous_word : &String = &original.clone();
+    for rewrite in rewrite_history {
+        result = format!("{}\n", format_individual_transform(&rewrite, &current_previous_word));
+        current_previous_word = &rewrite.1;
+    }
+    format!("{}\nfinal: {}\n----", result, current_previous_word)
+}
+fn format_individual_transform(transform : &(Rewrite, String), previous : &String) -> String {
+    format!("{} --> {} ({} --> {})", previous, transform.1, transform.0.pattern, transform.0.replace)
+}
 
 //ultimate goal is to emit formatted strings like this:
 //qwe: due to syllable rejects []
@@ -119,7 +140,7 @@ fn write_list_simple(word_list: &Vec<Word>, config : &WordGeneratorConfig) {
 //qwe: due to syllable rejects [] and grapheme rejects []
 fn format_word_rejects(word : &Word) -> String {
     if word.syllable_rejects.len() == 0 && word.grapheme_rejects.len() == 0 { return String::from_str(""); }
-    let mut result : String = String::from_str(": due to ");
+    let mut result : String = String::from_str(": rejected due to ");
     match word.syllable_rejects.len() {
         0 => (),
         1 => {
