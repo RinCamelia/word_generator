@@ -101,14 +101,20 @@ impl WordGenerator for WordFactory {
     }
     fn rewrite_syllables(&self, word: &mut Word) {
         for rewrite in &self.rewrites.syllable_rewrites {
-            let rewritten_string = apply_single_rewrite(&rewrite.pattern, &rewrite.replace, &word.syllables);
-            word.syllable_rewrite_history.push((rewrite.clone(), rewritten_string));
+            let rewritten_string = apply_single_rewrite(&rewrite.pattern, &rewrite.replace, &get_word_syllables(&word));
+            match rewritten_string {
+                Some(result) => word.syllable_rewrite_history.push((rewrite.clone(), result)),
+                _ => ()
+            }
         }
     }
     fn rewrite_graphemes(&self, word: &mut Word) {
         for rewrite in &self.rewrites.grapheme_rewrites {
-            let rewritten_string = apply_single_rewrite(&rewrite.pattern, &rewrite.replace, &word.graphemes);
-            word.grapheme_rewrite_history.push((rewrite.clone(), rewritten_string));
+            let rewritten_string = apply_single_rewrite(&rewrite.pattern, &rewrite.replace, &get_word_graphemes(&word));
+            match rewritten_string {
+                Some(result) => word.grapheme_rewrite_history.push((rewrite.clone(), result)),
+                _ => ()
+            }
         }
     }
     fn mark_syllable_rejects(&self, word: &mut Word) {
@@ -135,12 +141,15 @@ impl WordGenerator for WordFactory {
     }
 }
 
-fn apply_single_rewrite(rewrite : &String, replace : &String, source : &String) -> String {
+fn apply_single_rewrite(rewrite : &String, replace : &String, source : &String) -> Option<String> {
     let rewrite_regex : Regex = match Regex::new(&rewrite) {
         Ok(res) => res,
         Err(err) => panic!("Error '{}' with regex '{}' in a rewrite, please verify that it is valid", err, &rewrite)
     };
-    rewrite_regex.replace_all(&source, NoExpand(replace))
+    match rewrite_regex.is_match(&source) {
+        true => Some(rewrite_regex.replace_all(&source, NoExpand(replace))),
+        false => None,
+    }
 }
 
 fn syllable_element_to_random_grapheme(grapheme_groups : &Vec<(String, Vec<Weighted<String>>)>, syllable_element : &String) -> String {

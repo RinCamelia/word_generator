@@ -47,8 +47,8 @@
         ],
         "grapheme_rewrites": [
             {
-                "pattern": "abc",
-                "replace": "def"
+                "pattern": "é",
+                "replace": "el"
             }
         ]
     },
