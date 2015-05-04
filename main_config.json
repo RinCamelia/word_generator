@@ -1,7 +1,7 @@
 {
     "output_settings": {
         "show_word_rewrites": true,
-        "show_syllable_strings":false,
+        "show_syllable_strings":true,
         "only_mark_rejects": true,
         "output_file": "words.txt",
         "word_count": 10

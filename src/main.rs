@@ -89,7 +89,11 @@ fn write_list_simple(word_list: &Vec<Word>, config : &WordGeneratorConfig) {
     let mut file = File::create(&config.output_settings.output_file).unwrap();
 
     for word in word_list {
-        let mut result : String = get_word_graphemes(&word);
+        let mut result : String = format!("{}{}", "Word: ", get_word_graphemes(&word));
+
+        if config.output_settings.show_syllable_strings {
+            result = format!("{} ({})", result, get_word_syllables(&word));
+        }
 
         //note: we are specifically continue-ing out of this loop in a sub-if to implement mark vs drop behavior
         if word.syllable_rejects.len() > 0 || word.grapheme_rejects.len() > 0 {
@@ -100,21 +104,24 @@ fn write_list_simple(word_list: &Vec<Word>, config : &WordGeneratorConfig) {
             }
         }
 
-        if config.output_settings.show_syllable_strings {
-            result = format!("{} ({})", result, get_word_syllables(&word));
-            if config.output_settings.show_word_rewrites {
-                result = format!("{}\n{}\n\n", result, format_transforms(&word.syllables, &word.syllable_rewrite_history));
+        if config.output_settings.show_word_rewrites {
+            let mut show_no_rewrites_message : bool = true;
+            if config.output_settings.show_word_rewrites && config.output_settings.show_syllable_strings && word.syllable_rewrite_history.len() > 0 {
+                result = format!("{}\n-Syllable rewrites:\n{}", result, format_transforms(&word.syllables, &word.syllable_rewrite_history));
+                show_no_rewrites_message = false;
+            }
+            if config.output_settings.show_word_rewrites && word.grapheme_rewrite_history.len() > 0 {
+                result = format!("{}\n-Grapheme rewrites:\n{}", result, format_transforms(&word.graphemes, &word.grapheme_rewrite_history));
+                show_no_rewrites_message = false;
+            }
+            if word.syllable_rewrite_history.len() > 0 || word.grapheme_rewrite_history.len() > 0 {
+                result = format!("{}\n", result);
+            } else if show_no_rewrites_message { //please note, will not put no rewrites applied if syllable display is off and there are applied syllable rewrites - fix later
+                result = format!("{} (No rewrites applied)", result);
             }
         }
-        if config.output_settings.show_word_rewrites {
-            result = format!("{}\n{}\n\n", result, format_transforms(&word.graphemes, &word.grapheme_rewrite_history));
-        }
-
+        result = format!("{}\n", result);
         match file.write(result.as_bytes()) {
-                Err(error) => panic!("error {} writing to file", error),
-                Ok(_) => (),
-        };
-        match file.write("\n".as_bytes()) {
                 Err(error) => panic!("error {} writing to file", error),
                 Ok(_) => (),
         };
@@ -122,13 +129,13 @@ fn write_list_simple(word_list: &Vec<Word>, config : &WordGeneratorConfig) {
 }
 
 fn format_transforms(original : &String, rewrite_history : &Vec<(Rewrite, String)>) -> String {
-    let mut result : String = String::from_str("----\n");
+    let mut result : String = String::from_str("---------\n");
     let mut current_previous_word : &String = &original.clone();
     for rewrite in rewrite_history {
-        result = format!("{}\n", format_individual_transform(&rewrite, &current_previous_word));
+        result = format!("-{}\n", format_individual_transform(&rewrite, &current_previous_word));
         current_previous_word = &rewrite.1;
     }
-    format!("{}\nfinal: {}\n----", result, current_previous_word)
+    format!("{}-final: {}\n---------", result, current_previous_word)
 }
 fn format_individual_transform(transform : &(Rewrite, String), previous : &String) -> String {
     format!("{} --> {} ({} --> {})", previous, transform.1, transform.0.pattern, transform.0.replace)
@@ -140,7 +147,7 @@ fn format_individual_transform(transform : &(Rewrite, String), previous : &Strin
 //qwe: due to syllable rejects [] and grapheme rejects []
 fn format_word_rejects(word : &Word) -> String {
     if word.syllable_rejects.len() == 0 && word.grapheme_rejects.len() == 0 { return String::from_str(""); }
-    let mut result : String = String::from_str(": rejected due to ");
+    let mut result : String = String::from_str(" (rejected due to ");
     match word.syllable_rejects.len() {
         0 => (),
         1 => {
@@ -203,6 +210,7 @@ fn format_word_rejects(word : &Word) -> String {
             }
         },
     }
+    result.push_str(")");
     result
 }
 
