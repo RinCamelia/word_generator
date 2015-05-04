@@ -8,7 +8,7 @@ use std::fs::File;
 #[derive(RustcEncodable, RustcDecodable, Clone)]
 pub struct OutputSettings {
     pub show_word_rewrites : bool,
-    pub show_full_word_transforms : bool,
+    pub show_syllable_strings : bool,
     pub only_mark_rejects : bool,
     pub output_file : String,
     pub word_count : usize,
@@ -81,7 +81,7 @@ pub fn generate_test_config() -> WordGeneratorConfig {
             output_file: "test".to_string(),
             word_count: 10,
             show_word_rewrites: false,
-            show_full_word_transforms: false,
+            show_syllable_strings: false,
             only_mark_rejects: false,
         },
         graphemes: vec![
