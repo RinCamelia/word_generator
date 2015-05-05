@@ -1,5 +1,6 @@
 extern crate rand;
 
+use unicode_segmentation::UnicodeSegmentation;
 use config::*;
 use rand::*;
 use rand::distributions::{Weighted, WeightedChoice, IndependentSample};
@@ -93,7 +94,7 @@ impl WordGenerator for WordFactory {
         assert!(!word.syllables.is_empty(), "Cannot call generate_graphemes on a word without a syllable string");
 
         let mut grapheme_vector = Vec::new();
-        for grapheme in get_word_syllables(&word).graphemes(false) {
+        for grapheme in UnicodeSegmentation::graphemes(get_word_syllables(&word).as_str(), false) {
             grapheme_vector.push(syllable_element_to_random_grapheme(&self.graphemes, &String::from_str(&grapheme)));
         }
 

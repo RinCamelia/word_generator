@@ -12,3 +12,6 @@ rustc-serialize = "0.3.10"
 
 [dependencies.regex]
 regex = "0.1.27"
+
+[dependencies.unicode-segmentation]
+unicode-segmentation = "0.1.0"

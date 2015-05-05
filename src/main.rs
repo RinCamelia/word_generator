@@ -1,5 +1,5 @@
 #![feature(collections)]
-#![feature(unicode)]
+#![feature(convert)]
 
 //modules
 
@@ -11,9 +11,11 @@ mod word;
 extern crate rand;
 extern crate rustc_serialize;
 extern crate regex;
+extern crate unicode_segmentation;
 
 //use
 
+use unicode_segmentation::UnicodeSegmentation;
 use config::*;
 use word::*;
 use std::io::prelude::*;
