@@ -58,7 +58,7 @@
     },
     "rejects": {
         "syllable_rejects": [
-            "VVV",
+            "VVV"
         ],
         "grapheme_rejects": [
             "n.t"
