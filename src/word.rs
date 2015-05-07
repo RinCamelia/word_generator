@@ -15,6 +15,7 @@ pub struct Word {
     pub grapheme_rewrite_history : Vec<(Rewrite, String)>,
     pub syllable_rejects : Vec<String>,
     pub grapheme_rejects : Vec<String>,
+    pub syllable_count : usize,
 }
 
 pub struct WordFactory {
@@ -69,7 +70,7 @@ impl WordGenerator for WordFactory {
                 None => { break }
             }
         }
-
+        word.syllable_count = syllable_count;
         word.syllables = match syllable_count {
             1 => {
                 get_random_from_weighted(&self.first_syllable_list)

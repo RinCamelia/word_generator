@@ -94,7 +94,7 @@ fn write_list_simple(word_list: &Vec<Word>, config : &WordGeneratorConfig) {
         let mut result : String = format!("{}{}", "Word: ", get_word_graphemes(&word));
 
         if config.output_settings.show_syllable_strings {
-            result = format!("{} ({})", result, get_word_syllables(&word));
+            result = format!("{} ({} syllable(s) {})", result, &word.syllable_count, get_word_syllables(&word));
         }
 
         //note: we are specifically continue-ing out of this loop in a sub-if to implement mark vs drop behavior
@@ -228,7 +228,8 @@ fn generate_word_list(config : &WordGeneratorConfig, word_factory : &WordFactory
             syllable_rewrite_history : Vec::new(),
             grapheme_rewrite_history : Vec::new(),
             syllable_rejects : Vec::new(),
-            grapheme_rejects : Vec::new()
+            grapheme_rejects : Vec::new(),
+            syllable_count : 0
         };
 
         word_factory.generate_syllables(&mut word);
