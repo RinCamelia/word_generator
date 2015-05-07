@@ -43,6 +43,10 @@
             {
                 "pattern": "VV",
                 "replace": "V"
+            },
+            {
+                "pattern": "CC",
+                "replace": "CVC"
             }
         ],
         "grapheme_rewrites": [
@@ -55,11 +59,9 @@
     "rejects": {
         "syllable_rejects": [
             "VVV",
-            "VVV",
-            "VVV"
         ],
         "grapheme_rejects": [
-            "é"
+            "n.t"
         ]
     }
 }
