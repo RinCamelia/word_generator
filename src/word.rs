@@ -149,7 +149,7 @@ fn apply_single_rewrite(rewrite : &String, replace : &String, source : &String) 
         Err(err) => panic!("Error '{}' with regex '{}' in a rewrite, please verify that it is valid", err, &rewrite)
     };
     match rewrite_regex.is_match(&source) {
-        true => Some(rewrite_regex.replace_all(&source, NoExpand(replace))),
+        true => Some(rewrite_regex.replace_all(&source, replace.as_str())),
         false => None,
     }
 }

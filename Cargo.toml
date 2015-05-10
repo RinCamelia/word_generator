@@ -11,7 +11,7 @@ git = "https://github.com/rust-lang/rand.git"
 rustc-serialize = "0.3.10"
 
 [dependencies.regex]
-regex = "0.1.27"
+regex = "0.1.30"
 
 [dependencies.unicode-segmentation]
 unicode-segmentation = "0.1.0"
