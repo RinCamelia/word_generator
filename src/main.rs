@@ -84,10 +84,10 @@ fn main() {
         rejects : config.rejects.clone(),
     };
 
-    write_list_simple(&generate_word_list(&config, &word_factory), &config);
+    write_list(&generate_word_list(&config, &word_factory), &config);
 }
 
-fn write_list_simple(word_list: &Vec<Word>, config : &WordGeneratorConfig) {
+fn write_list(word_list: &Vec<Word>, config : &WordGeneratorConfig) {
     let mut file = File::create(&config.output_settings.output_file).unwrap();
 
     for word in word_list {
