@@ -1,6 +1,3 @@
-#![feature(collections)]
-#![feature(convert)]
-
 //modules
 
 mod config;
@@ -131,7 +128,7 @@ fn write_list(word_list: &Vec<Word>, config : &WordGeneratorConfig) {
 }
 
 fn format_transforms(original : &String, rewrite_history : &Vec<(Rewrite, String)>) -> String {
-    let mut result : String = String::from_str("---------\n");
+    let mut result : String = "---------\n".to_string();
     let mut current_previous_word : &String = &original.clone();
     for rewrite in rewrite_history {
         result = format!("-{}\n", format_individual_transform(&rewrite, &current_previous_word));
@@ -148,8 +145,8 @@ fn format_individual_transform(transform : &(Rewrite, String), previous : &Strin
 //qwe: due to grapheme rejects []
 //qwe: due to syllable rejects [] and grapheme rejects []
 fn format_word_rejects(word : &Word) -> String {
-    if word.syllable_rejects.len() == 0 && word.grapheme_rejects.len() == 0 { return String::from_str(""); }
-    let mut result : String = String::from_str(" (rejected due to ");
+    if word.syllable_rejects.len() == 0 && word.grapheme_rejects.len() == 0 { return String::new(); }
+    let mut result : String = " (rejected due to ".to_string();
     match word.syllable_rejects.len() {
         0 => (),
         1 => {

@@ -5,7 +5,6 @@ use config::*;
 use rand::*;
 use rand::distributions::{Weighted, WeightedChoice, IndependentSample};
 use regex::Regex;
-use regex::NoExpand;
 
 
 pub struct Word {
@@ -95,11 +94,15 @@ impl WordGenerator for WordFactory {
         assert!(!word.syllables.is_empty(), "Cannot call generate_graphemes on a word without a syllable string");
 
         let mut grapheme_vector = Vec::new();
-        for grapheme in UnicodeSegmentation::graphemes(get_word_syllables(&word).as_str(), false) {
-            grapheme_vector.push(syllable_element_to_random_grapheme(&self.graphemes, &String::from_str(&grapheme)));
+
+        //explicitly a separate variable because putting the call to get_word_syllables in the graphemes constructor fails the type coercion to &str
+        let word_syllables_str : &str = &get_word_syllables(&word);
+
+        for grapheme in UnicodeSegmentation::graphemes(word_syllables_str, false) {
+            grapheme_vector.push(syllable_element_to_random_grapheme(&self.graphemes, &grapheme.to_string()));
         }
 
-        word.graphemes = grapheme_vector.iter().fold(String::new(), |accumulator : String, character| { let mut new_str = String::from_str(&accumulator); new_str.push_str(&character); new_str});
+        word.graphemes = grapheme_vector.iter().fold(String::new(), |accumulator : String, character| { let mut new_str = accumulator.to_string(); new_str.push_str(&character); new_str});
     }
     fn rewrite_syllables(&self, word: &mut Word) {
         for rewrite in &self.rewrites.syllable_rewrites {
@@ -148,8 +151,9 @@ fn apply_single_rewrite(rewrite : &String, replace : &String, source : &String) 
         Ok(res) => res,
         Err(err) => panic!("Error '{}' with regex '{}' in a rewrite, please verify that it is valid", err, &rewrite)
     };
+    let replace_str :&str = &replace;
     match rewrite_regex.is_match(&source) {
-        true => Some(rewrite_regex.replace_all(&source, replace.as_str())),
+        true => Some(rewrite_regex.replace_all(&source, replace_str)),
         false => None,
     }
 }
