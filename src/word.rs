@@ -151,13 +151,16 @@ fn apply_single_rewrite(rewrite : &String, replace : &String, source : &String) 
         Ok(res) => res,
         Err(err) => panic!("Error '{}' with regex '{}' in a rewrite, please verify that it is valid", err, &rewrite)
     };
+
+    //explicitly separating out a coercion from String to &str because rust does not perform the coercian in the below replace_all call
     let replace_str :&str = &replace;
+
     match rewrite_regex.is_match(&source) {
         true => Some(rewrite_regex.replace_all(&source, replace_str)),
         false => None,
+
     }
 }
-
 fn syllable_element_to_random_grapheme(grapheme_groups : &Vec<(String, Vec<Weighted<String>>)>, syllable_element : &String) -> String {
     let matching_grapheme_group : Vec<Weighted<String>> = match grapheme_groups.iter().filter(|ref i| i.0 == *syllable_element).map(|ref i| i.1.clone()).last() {
         Some(res) => res,
