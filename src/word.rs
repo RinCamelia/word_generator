@@ -1,4 +1,8 @@
+//extern crates
+
 extern crate rand;
+
+//uses
 
 use unicode_segmentation::UnicodeSegmentation;
 use config::*;
@@ -6,6 +10,7 @@ use rand::*;
 use rand::distributions::{Weighted, WeightedChoice, IndependentSample};
 use regex::Regex;
 
+//structs
 
 pub struct Word {
     pub syllables : String,
@@ -30,6 +35,8 @@ pub struct WordFactory {
 
     pub generate_settings : GenerateSettings,
 }
+
+//traits
 
 pub trait WordGenerator {
 //    fn new(
@@ -62,18 +69,15 @@ impl WordGenerator for WordFactory {
                     if x < current_chance_for_syllable && syllable_count < self.generate_settings.max_syllables {
                         syllable_count = syllable_count + 1;
                         current_chance_for_syllable *= 1.0-self.generate_settings.syllable_decay_rate;
-                    } else {
-                        break
                     }
-                }
+                    else { break }
+                },
                 None => { break }
             }
         }
         word.syllable_count = syllable_count;
         word.syllables = match syllable_count {
-            1 => {
-                get_random_from_weighted(&self.first_syllable_list)
-            },
+            1 => { get_random_from_weighted(&self.first_syllable_list) },
             2 => {
                 let mut temp_word = get_random_from_weighted(&self.first_syllable_list);
                 temp_word.push_str(&get_random_from_weighted(&self.last_syllable_list));
@@ -81,14 +85,17 @@ impl WordGenerator for WordFactory {
             },
             _ => {
                 let mut temp_word = get_random_from_weighted(&self.first_syllable_list);
+
                 for _ in 1..(syllable_count - 1) {
                     temp_word.push_str(&get_random_from_weighted(&self.normal_syllable_list));
                 }
+
                 temp_word.push_str(&get_random_from_weighted(&self.last_syllable_list));
                 temp_word
             },
         };
     }
+
 
     fn generate_graphemes(&self, word: &mut Word) {
         assert!(!word.syllables.is_empty(), "Cannot call generate_graphemes on a word without a syllable string");
@@ -104,47 +111,61 @@ impl WordGenerator for WordFactory {
 
         word.graphemes = grapheme_vector.iter().fold(String::new(), |accumulator : String, character| { let mut new_str = accumulator.to_string(); new_str.push_str(&character); new_str});
     }
+
+
     fn rewrite_syllables(&self, word: &mut Word) {
         for rewrite in &self.rewrites.syllable_rewrites {
             let rewritten_string = apply_single_rewrite(&rewrite.pattern, &rewrite.replace, &get_word_syllables(&word));
+
             match rewritten_string {
                 Some(result) => word.syllable_rewrite_history.push((rewrite.clone(), result)),
                 _ => ()
             }
         }
     }
+
+
     fn rewrite_graphemes(&self, word: &mut Word) {
         for rewrite in &self.rewrites.grapheme_rewrites {
             let rewritten_string = apply_single_rewrite(&rewrite.pattern, &rewrite.replace, &get_word_graphemes(&word));
+
             match rewritten_string {
                 Some(result) => word.grapheme_rewrite_history.push((rewrite.clone(), result)),
                 _ => ()
             }
         }
     }
+
+
     fn mark_syllable_rejects(&self, word: &mut Word) {
         for reject in &self.rejects.syllable_rejects {
             let reject_regex : Regex = match Regex::new(&reject) {
                 Ok(res) => res,
                 Err(err) => panic!("Error '{}' with regex '{}' in a reject, please verify that it is valid", err, &reject)
             };
+
             if reject_regex.is_match(&get_word_syllables(&word)) {
                 word.syllable_rejects.push(reject.clone());
             }
         }
     }
+
+
     fn mark_grapheme_rejects(&self, word: &mut Word) {
         for reject in &self.rejects.grapheme_rejects {
             let reject_regex : Regex = match Regex::new(&reject) {
                 Ok(res) => res,
                 Err(err) => panic!("Error '{}' with regex '{}' in a reject, please verify that it is valid", err, &reject)
             };
+
             if reject_regex.is_match(&get_word_graphemes(&word)) {
                 word.grapheme_rejects.push(reject.clone());
             }
         }
     }
 }
+
+//functions
 
 fn apply_single_rewrite(rewrite : &String, replace : &String, source : &String) -> Option<String> {
     let rewrite_regex : Regex = match Regex::new(&rewrite) {
@@ -161,6 +182,8 @@ fn apply_single_rewrite(rewrite : &String, replace : &String, source : &String) 
 
     }
 }
+
+
 fn syllable_element_to_random_grapheme(grapheme_groups : &Vec<(String, Vec<Weighted<String>>)>, syllable_element : &String) -> String {
     let matching_grapheme_group : Vec<Weighted<String>> = match grapheme_groups.iter().filter(|ref i| i.0 == *syllable_element).map(|ref i| i.1.clone()).last() {
         Some(res) => res,
@@ -169,6 +192,7 @@ fn syllable_element_to_random_grapheme(grapheme_groups : &Vec<(String, Vec<Weigh
     };
     get_random_from_weighted(&matching_grapheme_group)
 }
+
 
 fn get_random_from_weighted(values : &Vec<Weighted<String>>) -> String {
 
@@ -180,6 +204,7 @@ fn get_random_from_weighted(values : &Vec<Weighted<String>>) -> String {
     selector.ind_sample(&mut rng)
 }
 
+
 //temporary function to properly obtain rewritten syllables and graphemes for a word, needs to be refactored into a word trait
 pub fn get_word_syllables(word : &Word) -> String {
     match word.syllable_rewrite_history.last() {
@@ -187,6 +212,8 @@ pub fn get_word_syllables(word : &Word) -> String {
         None => word.syllables.clone()
     }
 }
+
+
 pub fn get_word_graphemes(word : &Word) -> String {
     match word.grapheme_rewrite_history.last() {
         Some(result) => result.1.clone(),
